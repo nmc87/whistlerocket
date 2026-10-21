@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { db } from './db';
-import { addManualEntry, addTask, ColorClashError, createProject, deleteProject, getRunning, moveProject, settleCountdowns, startTimer, stopRunning, toggleTask } from './actions';
+import { addManualEntry, addTask, ColorClashError, createProject, createSite, deleteProject, getRunning, moveProject, settleCountdowns, startTimer, stopRunning, toggleTask } from './actions';
 import { ensureSeed } from './seed';
 import { exportBackup, parseBackup, restoreBackup } from './backup';
 import { MINUTE } from '../lib/time';
@@ -99,5 +99,31 @@ describe('taken en back-up', () => {
   it('weigert een vreemd bestand', () => {
     expect(() => parseBackup('{"hallo":1}')).toThrow('niet uit WhistleRocket');
     expect(() => parseBackup('geen json')).toThrow('geen geldig');
+  });
+});
+
+describe('locaties (Footprint)', () => {
+  it('vraagt om een plek op de kaart en bewaart nette waarden', async () => {
+    const p = await createProject({ name: 'A', label: 'Bedrijf', color: '#6E8BFF' });
+    await expect(createSite({ projectId: p.id, name: 'Kantoor', kind: 'Kantoor', lat: null, lon: null })).rejects.toThrow('op de kaart');
+    const s = await createSite({ projectId: p.id, name: '  Magazijn Tilburg ', kind: 'Magazijn', description: ' opslag ', lat: 51.555612345, lon: 5.0913, city: 'Tilburg', country: 'Nederland' });
+    expect(s).toMatchObject({ name: 'Magazijn Tilburg', description: 'opslag', lat: 51.555612, city: 'Tilburg' });
+  });
+
+  it('gaan mee weg met hun bedrijf en mee in de back-up', async () => {
+    const p = await createProject({ name: 'A', label: 'Bedrijf', color: '#6E8BFF' });
+    await createSite({ projectId: p.id, name: 'Fabriek', kind: 'Fabriek', lat: 52, lon: 5 });
+    const json = JSON.stringify(await exportBackup());
+    await db.sites.clear();
+    await restoreBackup(parseBackup(json));
+    expect(await db.sites.count()).toBe(1);
+    await deleteProject(p.id);
+    expect(await db.sites.count()).toBe(0);
+  });
+
+  it('kan een oude back-up zonder locaties terugzetten', async () => {
+    const old = { app: 'whistlerocket', format: 1, exportedAt: '2026-10-21T08:00:00Z', projects: [], entries: [], tasks: [], settings: [] };
+    await restoreBackup(parseBackup(JSON.stringify(old)));
+    expect(await db.sites.count()).toBe(0);
   });
 });

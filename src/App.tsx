@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { Topbar } from './components/Topbar';
@@ -12,6 +12,9 @@ import { Settings } from './pages/Settings';
 import { ensureSeed } from './db/seed';
 import { useSetting } from './lib/hooks';
 import type { Theme } from './db/actions';
+
+// De kaart (met wereldkaart) wordt pas geladen als je Footprint opent.
+const Footprint = lazy(() => import('./pages/Footprint'));
 
 export const THEME_KEY = 'wr-theme';
 
@@ -61,6 +64,7 @@ export default function App() {
               <Route path="/taken" element={<TasksPage />} />
               <Route path="/uren" element={<Hours />} />
               <Route path="/project/:id" element={<ProjectPage />} />
+              <Route path="/footprint" element={<Suspense fallback={<div className="page quiet">Footprint laden…</div>}><Footprint /></Suspense>} />
               <Route path="/instellingen" element={<Settings />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '../db/db';
 import { useEntriesFrom, useNow, useProject, useProjects, useRunning, useTasks } from '../lib/hooks';
 import { addDays, formatLong, startOfWeek, totalInRange } from '../lib/time';
 import { ProjectAvatar } from '../components/ProjectAvatar';
@@ -21,6 +23,7 @@ export function ProjectPage() {
   const entries = useEntriesFrom(addDays(weekStart, -28));
   const openForm = useOpenProjectForm();
   const [showDone, setShowDone] = useState(false);
+  const sites = useLiveQuery(() => (id ? db.sites.where('projectId').equals(id).toArray() : []), [id]) ?? [];
 
   if (project === undefined) return <div className="page" />;
   if (project === null) {
@@ -112,6 +115,28 @@ export function ProjectPage() {
             ) : (
               <div>{recent.map((e) => <EntryRow key={e.id} entry={e} projects={projects} now={now} showProject={false} />)}</div>
             )}
+          </section>
+
+          <section className="card" aria-labelledby="plocs-h">
+            <div className="card-head">
+              <h2 id="plocs-h" className="card-title">Locaties</h2>
+              <Link to={`/footprint?project=${project.id}`} className="card-sub">Op de kaart</Link>
+            </div>
+            {sites.length === 0 ? (
+              <p className="empty-state" style={{ paddingTop: 0 }}>Nog geen kantoor, magazijn of andere locatie.</p>
+            ) : (
+              <ul className="list">
+                {sites.map((s) => (
+                  <li key={s.id} className="task">
+                    <span className="title">
+                      <span className="row wrap" style={{ gap: 6 }}><strong style={{ fontWeight: 600 }}>{s.name}</strong><span className="kind-chip">{s.kind}</span></span>
+                      <span className="quiet" style={{ fontSize: 12 }}>{[s.city, s.country].filter(Boolean).join(', ')}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <Link to={`/footprint?project=${project.id}&nieuw=1`} className="btn small" style={{ marginTop: 10 }}><Icon name="plus" size={14} /> Locatie toevoegen</Link>
           </section>
         </div>
       </div>

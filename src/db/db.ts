@@ -84,6 +84,29 @@ export interface Task {
   createdAt: number;
 }
 
+/** Soorten locaties in Footprint. */
+export const SITE_KINDS = [
+  'Hoofdkantoor', 'Kantoor', 'Vestiging', 'Winkel', 'Showroom', 'Wasstraat',
+  'Werkplaats', 'Fabriek', 'Magazijn', 'Distributiecentrum', 'Overig',
+] as const;
+export type SiteKind = (typeof SITE_KINDS)[number];
+
+/** Een fysieke plek van een bedrijf: kantoor, magazijn, fabriek, enzovoort. */
+export interface Site {
+  id: string;
+  projectId: string;
+  name: string;
+  kind: SiteKind;
+  /** Wat het voor locatie is, in eigen woorden. */
+  description: string;
+  address: string;
+  city: string;
+  country: string;
+  lat: number;
+  lon: number;
+  createdAt: number;
+}
+
 export interface Setting {
   key: string;
   value: unknown;
@@ -94,6 +117,7 @@ export class WhistleRocketDB extends Dexie {
   entries!: EntityTable<TimeEntry, 'id'>;
   tasks!: EntityTable<Task, 'id'>;
   settings!: EntityTable<Setting, 'key'>;
+  sites!: EntityTable<Site, 'id'>;
 
   constructor(name = 'whistlerocket') {
     super(name);
@@ -115,6 +139,8 @@ export class WhistleRocketDB extends Dexie {
             if (!p.logoStyle) p.logoStyle = { ...DEFAULT_LOGO_STYLE, fit: 'vullend' };
           }),
       );
+    // 0.2.0: Footprint, de kaart met alle locaties.
+    this.version(3).stores({ sites: 'id, projectId' });
   }
 }
 

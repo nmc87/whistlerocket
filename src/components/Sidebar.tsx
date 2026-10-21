@@ -35,6 +35,7 @@ export function Sidebar() {
       <Item to="/" end icon="grid" label="Vandaag" />
       <Item to="/taken" icon="check" label="Taken" badge={dueNow} />
       <Item to="/uren" icon="clock" label="Uren" />
+      <Item to="/footprint" icon="map" label="Footprint" />
 
       <div className="nav-heading">Projecten</div>
       {projects.map((p) => (

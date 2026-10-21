@@ -14,6 +14,8 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        // Links (zoals Google Maps) openen in je gewone browser.
+        .plugin(tauri_plugin_opener::init())
         .run(tauri::generate_context!())
         .expect("WhistleRocket kon niet starten");
 }

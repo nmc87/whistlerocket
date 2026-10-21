@@ -1,4 +1,4 @@
-import { db, logoStyleOf, type Label, type LogoStyle, type Project, type Task, type TimeEntry, type TimerMode } from './db';
+import { db, logoStyleOf, SITE_KINDS, type Label, type LogoStyle, type Project, type Site, type SiteKind, type Task, type TimeEntry, type TimerMode } from './db';
 import { uid } from '../lib/id';
 import { MINUTE } from '../lib/time';
 import { closestClash, isHex, monogramFrom } from '../lib/color';
@@ -76,11 +76,12 @@ export async function updateProject(id: string, input: ProjectInput): Promise<vo
   });
 }
 
-/** Verwijdert het project met zijn taken en uren. */
+/** Verwijdert het project met zijn taken, uren en locaties. */
 export async function deleteProject(id: string): Promise<void> {
-  await db.transaction('rw', db.projects, db.entries, db.tasks, async () => {
+  await db.transaction('rw', [db.projects, db.entries, db.tasks, db.sites], async () => {
     await db.entries.where('projectId').equals(id).delete();
     await db.tasks.where('projectId').equals(id).delete();
+    await db.sites.where('projectId').equals(id).delete();
     await db.projects.delete(id);
   });
 }
@@ -190,6 +191,56 @@ export async function updateTask(id: string, patch: Partial<Pick<Task, 'title' |
 
 export async function deleteTask(id: string): Promise<void> {
   await db.tasks.delete(id);
+}
+
+// ---------- Locaties (Footprint) ----------
+
+export interface SiteInput {
+  projectId: string;
+  name: string;
+  kind: SiteKind;
+  description?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  lat: number | null;
+  lon: number | null;
+}
+
+function cleanSite(input: SiteInput): Omit<Site, 'id' | 'createdAt'> {
+  if (!input.projectId) throw new Error('Kies het bedrijf waar deze locatie bij hoort.');
+  const name = input.name.trim();
+  if (!name) throw new Error('Geef de locatie een naam.');
+  if (!SITE_KINDS.includes(input.kind)) throw new Error('Kies een soort locatie.');
+  const { lat, lon } = input;
+  if (lat === null || lon === null || !Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
+    throw new Error('Zet de locatie op de kaart: zoek het adres of klik op de kaart.');
+  }
+  return {
+    projectId: input.projectId,
+    name,
+    kind: input.kind,
+    description: (input.description ?? '').trim(),
+    address: (input.address ?? '').trim(),
+    city: (input.city ?? '').trim(),
+    country: (input.country ?? '').trim(),
+    lat: Math.round(lat * 1e6) / 1e6,
+    lon: Math.round(lon * 1e6) / 1e6,
+  };
+}
+
+export async function createSite(input: SiteInput): Promise<Site> {
+  const site: Site = { id: uid(), createdAt: Date.now(), ...cleanSite(input) };
+  await db.sites.add(site);
+  return site;
+}
+
+export async function updateSite(id: string, input: SiteInput): Promise<void> {
+  await db.sites.update(id, cleanSite(input));
+}
+
+export async function deleteSite(id: string): Promise<void> {
+  await db.sites.delete(id);
 }
 
 // ---------- Instellingen ----------

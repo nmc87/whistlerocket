@@ -18,12 +18,13 @@ Tussentijdse versies (elke wijziging op `main`) staan bij **Actions** → de laa
 - **Projecten:** eigen kleur (geen twee projecten met een kleur die op elkaar lijkt), logo of monogram, label, holding, weekdoel. Per logo kies je zelf hoe het in het vakje staat: passend of vullend, zoom, positie (slepen) en achtergrond.
 - **Uren:** stopwatch en afteller (met fluittoon en melding als de tijd om is), uren achteraf toevoegen, overzicht per project per dag, export als CSV voor je boekhouding.
 - **Taken:** per project of los, met datum; gegroepeerd in te laat, vandaag, komende 7 dagen, later.
+- **Footprint:** kaart met al je kantoren, magazijnen, fabrieken, winkels en andere locaties. Per locatie een klein bedrijfslogo, naam, soort en omschrijving. Adres zoeken via PDOK (Nederland) en OpenStreetMap (buitenland), of zelf op de kaart klikken. Filter op bedrijf en soort; Google Maps voor straatniveau.
 - **Instellingen:** projecten beheren, donker, daglicht of Windows volgen, back-up maken en terugzetten.
 - **Zoeken:** `Ctrl+K` zoekt in projecten en taken.
 
 ## Waar staan je gegevens?
 
-Alleen op je eigen computer, in de opslag van het programma (IndexedDB). Er gaat nog niets naar internet. Maak via **Instellingen → Back-up maken** af en toe een back-up, bijvoorbeeld naar je OneDrive-map.
+Alleen op je eigen computer, in de opslag van het programma (IndexedDB). Alleen als je in Footprint een adres zoekt, gaat die zoekterm naar PDOK en OpenStreetMap; verder gaat er niets naar internet. Maak via **Instellingen → Back-up maken** af en toe een back-up, bijvoorbeeld naar je OneDrive-map.
 
 ## Volgende blokken
 

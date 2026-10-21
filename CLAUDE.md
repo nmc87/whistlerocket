@@ -7,3 +7,4 @@
 - Projectkleuren moeten uniek zijn: `closestClash` in `src/lib/color.ts`.
 - Voor je commit: `npm run typecheck`, `TZ=Europe/Amsterdam npm test`, `npm run build`. Rust-wijzigingen: `cargo check` in `src-tauri`.
 - Versie staat in `package.json` (Tauri leest die) en in `src-tauri/Cargo.toml`. Elke push naar main werkt de release `v<versie>` bij; versie verhogen = nieuwe release.
+- Footprint: wereldkaart offline (Natural Earth via world-atlas, d3-geo + d3-zoom). Adres zoeken alleen op een klik (Nominatim-regels: max 1 verzoek per seconde, geen zoeken tijdens typen); nieuwe externe hosts ook in de CSP van `src-tauri/tauri.conf.json` zetten.

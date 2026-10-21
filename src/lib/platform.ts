@@ -68,3 +68,14 @@ export function whistle(): void {
     // Geen geluid beschikbaar.
   }
 }
+
+/** Link openen in de gewone browser (in het programma via Windows, op het web in een nieuw tabblad). */
+export async function openExternal(url: string): Promise<void> {
+  if (!/^https:\/\//.test(url)) return;
+  if (isDesktop()) {
+    const { openUrl } = await import('@tauri-apps/plugin-opener');
+    await openUrl(url);
+    return;
+  }
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
