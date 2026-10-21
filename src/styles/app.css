@@ -136,7 +136,23 @@ h2.section { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01
 
 /* ---------- Avatar en tegels ---------- */
 .avatar { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; border-radius: 10px; font-weight: 700; letter-spacing: 0.02em; overflow: hidden; }
-.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar { position: relative; }
+.avatar img { width: 100%; height: 100%; object-fit: contain; display: block; transform-origin: center; user-select: none; }
+/* Achtergrond achter een logo (keuze per project). */
+.logo-bg-geen { background: transparent; }
+.logo-bg-wit { background: #FFFFFF; }
+.logo-bg-donker { background: #0D0F13; }
+.logo-bg-geen.avatar { box-shadow: inset 0 0 0 1px var(--line); }
+
+/* Logo-editor in het projectformulier. */
+.logo-editor { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.logo-stage { position: relative; width: 128px; height: 128px; flex: 0 0 auto; border-radius: 30px; overflow: hidden; cursor: grab; touch-action: none; outline-offset: 3px; }
+.logo-stage:active { cursor: grabbing; }
+.logo-stage.checker { background-color: var(--raised); background-image: linear-gradient(45deg, var(--active) 25%, transparent 25%, transparent 75%, var(--active) 75%), linear-gradient(45deg, var(--active) 25%, transparent 25%, transparent 75%, var(--active) 75%); background-size: 16px 16px; background-position: 0 0, 8px 8px; }
+.logo-stage img { width: 100%; height: 100%; display: block; transform-origin: center; pointer-events: none; user-select: none; }
+.logo-controls { flex: 1 1 220px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.logo-sizes { display: flex; align-items: flex-end; gap: 10px; }
+input[type='range'] { accent-color: var(--accent); width: 100%; }
 
 .quick-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
 .quick-tile { position: relative; flex: 0 0 132px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); text-decoration: none; color: var(--text); }

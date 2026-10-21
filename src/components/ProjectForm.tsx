@@ -1,9 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { db, LABELS, type Label, type Project } from '../db/db';
+import { db, DEFAULT_LOGO_STYLE, LABELS, logoStyleOf, type Label, type LogoStyle, type Project } from '../db/db';
 import { createProject, updateProject } from '../db/actions';
 import { closestClash, isHex, monogramFrom, PALETTE, suggestColor } from '../lib/color';
 import { useProjects } from '../lib/hooks';
 import { ProjectAvatar } from './ProjectAvatar';
+import { LogoEditor } from './LogoEditor';
 import { Icon } from './Icon';
 
 /** Het projectformulier kan overal geopend worden: startscherm, projectpagina, instellingen. */
@@ -27,13 +28,18 @@ interface Draft {
   color: string;
   monogram: string;
   logo: string | null;
+  logoStyle: LogoStyle;
   holding: string;
   quick: boolean;
   active: boolean;
   weekGoalHours: string;
 }
 
-/** Afbeelding verkleinen tot een logo van 128 px; svg blijft svg. */
+/**
+ * Logo inlezen zonder bij te snijden: de langste zijde wordt hooguit 512 px,
+ * de verhouding blijft. Svg blijft svg. Hoe het logo in het vakje staat,
+ * kies je daarna zelf (passend, vullend, zoom, positie).
+ */
 async function fileToLogo(file: File): Promise<string> {
   if (file.size > 5 * 1024 * 1024) throw new Error('Dit bestand is groter dan 5 MB.');
   if (file.type === 'image/svg+xml') {
@@ -45,16 +51,17 @@ async function fileToLogo(file: File): Promise<string> {
     const img = new Image();
     img.src = url;
     await img.decode();
-    const size = 128;
+    const max = 512;
+    const scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
     const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
+    canvas.width = w;
+    canvas.height = h;
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Kon het logo niet verwerken.');
-    const scale = Math.max(size / img.naturalWidth, size / img.naturalHeight);
-    const w = img.naturalWidth * scale;
-    const h = img.naturalHeight * scale;
-    ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, w, h);
     return canvas.toDataURL('image/png');
   } finally {
     URL.revokeObjectURL(url);
@@ -80,14 +87,14 @@ function ProjectDialog({ projectId, onClose }: { projectId?: string; onClose: ()
       void db.projects.get(projectId).then((p?: Project) => {
         if (!p) return;
         setDraft({
-          name: p.name, label: p.label, color: p.color, monogram: p.monogram, logo: p.logo,
+          name: p.name, label: p.label, color: p.color, monogram: p.monogram, logo: p.logo, logoStyle: logoStyleOf(p),
           holding: p.holding ?? '', quick: p.quick, active: p.active,
           weekGoalHours: p.weekGoalMinutes ? String(p.weekGoalMinutes / 60) : '',
         });
       });
     } else {
       void db.projects.toArray().then((ps) =>
-        setDraft({ name: '', label: 'Bedrijf', color: suggestColor(ps.map((p) => p.color)), monogram: '', logo: null, holding: '', quick: true, active: true, weekGoalHours: '' }),
+        setDraft({ name: '', label: 'Bedrijf', color: suggestColor(ps.map((p) => p.color)), monogram: '', logo: null, logoStyle: DEFAULT_LOGO_STYLE, holding: '', quick: true, active: true, weekGoalHours: '' }),
       );
     }
   }, [projectId, draft]);
@@ -103,7 +110,9 @@ function ProjectDialog({ projectId, onClose }: { projectId?: string; onClose: ()
   async function onLogo(file: File | undefined) {
     if (!file) return;
     try {
-      set('logo', await fileToLogo(file));
+      const logo = await fileToLogo(file);
+      // Een nieuw logo begint passend op wit: het hele logo is zichtbaar en leest in beide thema's.
+      setDraft((d) => (d ? { ...d, logo, logoStyle: { ...DEFAULT_LOGO_STYLE, bg: 'wit' } } : d));
       setError('');
     } catch (e) {
       setError((e as Error).message);
@@ -122,6 +131,7 @@ function ProjectDialog({ projectId, onClose }: { projectId?: string; onClose: ()
       color: draft.color,
       monogram: draft.monogram,
       logo: draft.logo,
+      logoStyle: draft.logoStyle,
       holding: draft.holding,
       quick: draft.quick,
       active: draft.active,
@@ -138,7 +148,7 @@ function ProjectDialog({ projectId, onClose }: { projectId?: string; onClose: ()
     }
   }
 
-  const preview = draft ? { name: draft.name || 'Nieuw project', color: isHex(draft.color) ? draft.color : '#8C92A0', monogram: draft.monogram || monogramFrom(draft.name || '?'), logo: draft.logo } : null;
+  const preview = draft ? { name: draft.name || 'Nieuw project', color: isHex(draft.color) ? draft.color : '#8C92A0', monogram: draft.monogram || monogramFrom(draft.name || '?'), logo: draft.logo, logoStyle: draft.logoStyle } : null;
 
   return (
     <dialog ref={ref} className="modal" onClose={onClose} aria-labelledby="pf-title">
@@ -223,8 +233,9 @@ function ProjectDialog({ projectId, onClose }: { projectId?: string; onClose: ()
                   <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="sr-only" onChange={(e) => void onLogo(e.target.files?.[0])} />
                 </label>
                 {draft.logo && <button type="button" className="btn small ghost" onClick={() => set('logo', null)}>Logo weghalen</button>}
-                <small>Zonder logo toont WhistleRocket het monogram.</small>
+                {!draft.logo && <small>Zonder logo toont WhistleRocket het monogram.</small>}
               </div>
+              {draft.logo && <LogoEditor project={preview} value={draft.logoStyle} onChange={(s) => set('logoStyle', s)} />}
             </div>
 
             <label className="switch">

@@ -15,7 +15,7 @@ Tussentijdse versies (elke wijziging op `main`) staan bij **Actions** → de laa
 ## Wat zit erin (blok 1)
 
 - **Vandaag:** begroeting, snelkiezer met je bedrijfslogo's, taken voor vandaag, uren deze week, focus-timer en al je projecten met filter op Bedrijf, Startup en Project (en per holding).
-- **Projecten:** eigen kleur (geen twee projecten met een kleur die op elkaar lijkt), logo of monogram, label, holding, weekdoel.
+- **Projecten:** eigen kleur (geen twee projecten met een kleur die op elkaar lijkt), logo of monogram, label, holding, weekdoel. Per logo kies je zelf hoe het in het vakje staat: passend of vullend, zoom, positie (slepen) en achtergrond.
 - **Uren:** stopwatch en afteller (met fluittoon en melding als de tijd om is), uren achteraf toevoegen, overzicht per project per dag, export als CSV voor je boekhouding.
 - **Taken:** per project of los, met datum; gegroepeerd in te laat, vandaag, komende 7 dagen, later.
 - **Instellingen:** projecten beheren, donker, daglicht of Windows volgen, back-up maken en terugzetten.

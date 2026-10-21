@@ -1,14 +1,24 @@
-import type { Project } from '../db/db';
+import { logoStyleOf, type LogoStyle, type Project } from '../db/db';
 import { inkOn } from '../lib/color';
 
-export type AvatarProject = Pick<Project, 'name' | 'color' | 'monogram' | 'logo'>;
+export type AvatarProject = Pick<Project, 'name' | 'color' | 'monogram' | 'logo'> & { logoStyle?: LogoStyle };
 
+/** Logo of monogram in een vierkant vakje. Het logo volgt de eigen weergave-instellingen van het project. */
 export function ProjectAvatar({ project, size = 36 }: { project: AvatarProject; size?: number }) {
   const radius = Math.round(size * 0.26);
   if (project.logo) {
+    const s = logoStyleOf(project);
     return (
-      <span className="avatar" style={{ width: size, height: size, borderRadius: radius }}>
-        <img src={project.logo} alt="" />
+      <span
+        className={`avatar logo-bg-${s.bg}`}
+        style={{ width: size, height: size, borderRadius: radius, background: s.bg === 'kleur' ? project.color : undefined }}
+      >
+        <img
+          src={project.logo}
+          alt=""
+          draggable={false}
+          style={{ objectFit: s.fit === 'vullend' ? 'cover' : 'contain', transform: `translate(${s.x}%, ${s.y}%) scale(${s.zoom})` }}
+        />
       </span>
     );
   }

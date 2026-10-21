@@ -1,4 +1,4 @@
-import { db, type Project } from './db';
+import { db, DEFAULT_LOGO_STYLE, type Project } from './db';
 import { uid } from '../lib/id';
 import receeperLogo from '../assets/logos/receeper.svg?raw';
 import lavaggioLogo from '../assets/logos/drive-in-lavaggio.svg?raw';
@@ -10,7 +10,7 @@ export function svgToDataUrl(svg: string): string {
 
 /** Je eigen bedrijven als startpunt. Labels en kleuren pas je aan in Instellingen. */
 export function seedProjects(now = Date.now()): Project[] {
-  const base = { holding: null, active: true, quick: true, weekGoalMinutes: null, createdAt: now };
+  const base = { holding: null, active: true, quick: true, weekGoalMinutes: null, createdAt: now, logoStyle: { ...DEFAULT_LOGO_STYLE, fit: 'vullend' as const } };
   return [
     { ...base, id: uid(), order: 0, name: 'Receeper', label: 'Startup', color: '#2FD083', monogram: 'RC', logo: svgToDataUrl(receeperLogo) },
     { ...base, id: uid(), order: 1, name: 'Straalhelder', label: 'Bedrijf', color: '#43B9F6', monogram: 'SH', logo: null },

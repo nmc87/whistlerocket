@@ -1,4 +1,4 @@
-import { db, type Label, type Project, type Task, type TimeEntry, type TimerMode } from './db';
+import { db, logoStyleOf, type Label, type LogoStyle, type Project, type Task, type TimeEntry, type TimerMode } from './db';
 import { uid } from '../lib/id';
 import { MINUTE } from '../lib/time';
 import { closestClash, isHex, monogramFrom } from '../lib/color';
@@ -11,6 +11,7 @@ export interface ProjectInput {
   color: string;
   monogram?: string;
   logo?: string | null;
+  logoStyle?: Partial<LogoStyle>;
   holding?: string | null;
   quick?: boolean;
   active?: boolean;
@@ -45,6 +46,7 @@ export async function createProject(input: ProjectInput): Promise<Project> {
     color: input.color.toUpperCase(),
     monogram: (input.monogram?.trim() || monogramFrom(name)).slice(0, 3).toUpperCase(),
     logo: input.logo ?? null,
+    logoStyle: logoStyleOf({ logoStyle: input.logoStyle }),
     holding: input.holding?.trim() || null,
     active: input.active ?? true,
     quick: input.quick ?? input.label !== 'Project',
@@ -66,6 +68,7 @@ export async function updateProject(id: string, input: ProjectInput): Promise<vo
     color: input.color.toUpperCase(),
     monogram: (input.monogram?.trim() || monogramFrom(name)).slice(0, 3).toUpperCase(),
     logo: input.logo ?? null,
+    logoStyle: logoStyleOf({ logoStyle: input.logoStyle }),
     holding: input.holding?.trim() || null,
     quick: input.quick ?? true,
     active: input.active ?? true,
