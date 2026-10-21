@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Receeper app-icoon"><title>Receeper app-icoon</title><rect width="1024" height="1024" rx="228" fill="#161B21"></rect><g transform="translate(291.5 227.0) scale(1.5)"><g>
+  <defs><clipPath id="ai-l"><rect x="150" y="-20" width="86" height="200"></rect></clipPath></defs>
+  <path d="M0 0H178L294 116V380L257.25 336L220.5 380L183.75 336L147 380L110.25 336L73.5 380L36.75 336L0 380Z" fill="#232A32" stroke="#F6F4EF" stroke-width="14" stroke-linejoin="round"></path>
+  <path d="M48 230H165M48 270H126M211 230H245M211 270H245" fill="none" stroke="#F6F4EF" stroke-width="12" stroke-linecap="round"></path>
+  <path d="M236 0L294 22V70C294 115 265 142 236 160C207 142 178 115 178 70V22Z" fill="#0CA05C"></path>
+  <path d="M236 0L294 22V70C294 115 265 142 236 160C207 142 178 115 178 70V22Z" fill="#0CCC76" clip-path="url(#ai-l)"></path>
+  <path d="M236 0L294 22V70C294 115 265 142 236 160C207 142 178 115 178 70V22Z" fill="none" stroke="#F6F4EF" stroke-width="12" stroke-linejoin="round"></path>
+  <path d="M178 0L294 116" fill="none" stroke="#F6F4EF" stroke-width="12" stroke-linecap="round"></path>
+</g></g></svg>
