@@ -45,7 +45,7 @@ npm test             # tests (zet TZ=Europe/Amsterdam voor de zomertijd-test)
 npm run tauri build  # installer in src-tauri/target/release/bundle/nsis
 ```
 
-Een release maken: verhoog `version` in `package.json` en `src-tauri/Cargo.toml`, commit, en push een tag zoals `v0.2.0`. GitHub bouwt dan de installer en zet hem bij Releases.
+Elke push naar `main` bouwt de installer en zet hem bij Releases onder de versie uit `package.json`. Een nieuwe release: verhoog `version` in `package.json` en `src-tauri/Cargo.toml` en push.
 
 ### Opbouw
 

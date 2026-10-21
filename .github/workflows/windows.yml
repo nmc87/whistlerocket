@@ -1,11 +1,11 @@
 name: Windows-installer
 
-# Bij elke push naar main: testen en een Windows-installer bouwen (te downloaden bij de run).
-# Bij een versietag (bijv. v0.1.0): ook een release met de installer op GitHub.
+# Bij elke push naar main: testen, een Windows-installer bouwen en die bij Releases zetten
+# onder de versie uit package.json (bijv. v0.1.0). Zelfde versie = de release wordt bijgewerkt;
+# hogere versie = een nieuwe release.
 on:
   push:
     branches: [main]
-    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -45,13 +45,13 @@ jobs:
           workspaces: src-tauri -> target
       - run: npm ci
 
-      - name: Installer bouwen (en release bij een versietag)
+      - name: Installer bouwen en bij Releases zetten
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || '' }}
-          releaseName: WhistleRocket ${{ github.ref_name }}
+          tagName: v__VERSION__
+          releaseName: WhistleRocket v__VERSION__
           releaseBody: Windows-installer voor eigen gebruik. Download het .exe-bestand hieronder en voer het uit.
           releaseDraft: false
           prerelease: true

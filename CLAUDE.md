@@ -6,4 +6,4 @@
 - Kleuren komen uit de tokens in `src/styles/app.css` (donker en `[data-theme='licht']`); geen losse hexwaarden in componenten behalve projectkleuren en het merk-amber `#F5B451`.
 - Projectkleuren moeten uniek zijn: `closestClash` in `src/lib/color.ts`.
 - Voor je commit: `npm run typecheck`, `TZ=Europe/Amsterdam npm test`, `npm run build`. Rust-wijzigingen: `cargo check` in `src-tauri`.
-- Versie staat in `package.json` (Tauri leest die) en in `src-tauri/Cargo.toml`. Release = tag `vX.Y.Z` pushen.
+- Versie staat in `package.json` (Tauri leest die) en in `src-tauri/Cargo.toml`. Elke push naar main werkt de release `v<versie>` bij; versie verhogen = nieuwe release.
